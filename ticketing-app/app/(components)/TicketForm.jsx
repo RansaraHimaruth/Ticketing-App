@@ -27,7 +27,7 @@ const TicketForm = () => {
     if (!response.ok) {
       throw new Error("Failed to create ticket");
     }
-    
+
     router.push("/");
   };
 
