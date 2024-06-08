@@ -4,7 +4,9 @@ import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { TextArea } from "@/components/ui/textarea";
 
-const TicketForm = () => {
+const TicketForm = ({ ticket }) => {
+  const EDITMODE = ticket._id === "new" ? false : true;
+
   const router = useRouter();
   const handleChange = (e) => {
     const value = e.target.value;
@@ -18,17 +20,29 @@ const TicketForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const response = await fetch("/api/Tickets", {
-      method: "POST",
-      body: JSON.stringify({ formData }),
+    if (EDITMODE) {
+      const response = await fetch(`/api/Tickets/${ticket._id}`, {
+        method: "PUT",
+        body: JSON.stringify({ formData }),
 
-      "Content-Type": "application/json",
-    });
-    if (!response.ok) {
-      throw new Error("Failed to create ticket");
+        "Content-Type": "application/json",
+      });
+      if (!response.ok) {
+        throw new Error("Failed to Update ticket");
+      }
+    } else {
+      const response = await fetch("/api/Tickets", {
+        method: "POST",
+        body: JSON.stringify({ formData }),
+
+        "Content-Type": "application/json",
+      });
+      if (!response.ok) {
+        throw new Error("Failed to create ticket");
+      }
     }
 
-    router.refresh;
+    
     router.push("/");
   };
 
@@ -39,8 +53,17 @@ const TicketForm = () => {
     progress: 0,
     status: "not started",
     category: "Hardware Problem",
-    // createdAt: new Date().toISOString(),
   };
+
+  if (EDITMODE) {
+    startingTicketData["title"] = ticket.title;
+    startingTicketData["description"] = ticket.description;
+    startingTicketData["priority"] = ticket.priority;
+    startingTicketData["progress"] = ticket.progress;
+    startingTicketData["status"] = ticket.status;
+    startingTicketData["category"] = ticket.category;
+  }
+
   const [formData, setFormData] = useState(startingTicketData);
   return (
     <div className="flex justify-center">
@@ -49,7 +72,7 @@ const TicketForm = () => {
         method="POST"
         onSubmit={handleSubmit}
       >
-        <h3>Create your Ticket</h3>
+        <h3>{EDITMODE ? "Update Your Ticket" : "Create Your Ticket"}</h3>
         <label>Title</label>
         <input
           type="text"
@@ -59,7 +82,7 @@ const TicketForm = () => {
           onChange={handleChange}
         />
         <label>Description</label>
-        <textArea
+        <textarea
           name="description"
           className="m-1 rounded  bg-card p-1"
           value={formData.description}
@@ -135,10 +158,11 @@ const TicketForm = () => {
           <option value="in progress">In Progress</option>
           <option value="completed">Completed</option>
         </select>
-        <Input type="submit" className="btn" value="Create Ticket" />
-        {/* <button type="submit" className="btn">
-          Create Ticket
-        </button> */}
+        <input
+          type="submit"
+          className="btn"
+          value={EDITMODE ? "Update Your Ticket" : "Create Your Ticket"}
+        />
       </form>
     </div>
   );

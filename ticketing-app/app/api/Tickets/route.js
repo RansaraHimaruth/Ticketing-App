@@ -7,9 +7,15 @@ export async function POST(req) {
     const ticketData = body.formData;
     await Ticket.create(ticketData);
 
-    return NextResponse.json("Success", "Ticket created successfully", 201);
+    return NextResponse.json(
+      { message: "Ticket created successfully" },
+      { status: 200 }
+    );
   } catch (error) {
-    return NextResponse.json("Error", error, 500);
+    return NextResponse.json(
+      { error: "Error creating ticket" },
+      { status: 500 }
+    );
   }
 }
 

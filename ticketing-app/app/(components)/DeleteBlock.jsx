@@ -5,7 +5,7 @@ import React from 'react'
 
 function DeleteBlock({id}) {
 
-  const router = useRouter();
+  const route = useRouter();
 
   const deleteTicket = async () => {
     try {
@@ -13,7 +13,7 @@ function DeleteBlock({id}) {
         method: 'DELETE',
       });
       if (response.ok){
-        router.refresh();
+        location.reload();
       }
     } catch (error) {
       console.log("Error deleting ticket", error);
