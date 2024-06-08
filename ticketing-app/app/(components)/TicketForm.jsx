@@ -42,7 +42,6 @@ const TicketForm = ({ ticket }) => {
       }
     }
 
-    
     router.push("/");
   };
 
